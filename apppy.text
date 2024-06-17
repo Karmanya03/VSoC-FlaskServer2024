@@ -16,19 +16,15 @@ leaderboard_data = []
 # Function to fetch participants from the database
 def fetch_leaderboard_data():
     global leaderboard_data
-    try:
-        conn = sqlitecloud.connect(CLOUD_DB_URL)
-        cursor = conn.cursor()
-        cursor.execute("USE DATABASE VSoC24Leaderboard")
-        cursor.execute("SELECT name, score, gitlink FROM participants ORDER BY score DESC")
-        participants = cursor.fetchall()
-        conn.close()
+    conn = sqlitecloud.connect(CLOUD_DB_URL)
+    cursor = conn.cursor()
+    cursor.execute("USE DATABASE VSoC24Leaderboard")
+    cursor.execute("SELECT name, score, gitlink FROM participants ORDER BY score DESC")
+    participants = cursor.fetchall()
+    conn.close()
 
-        # Assign rank to each participant
-        leaderboard_data = [{"rank": idx + 1, "name": row[0], "score": row[1], "gitlink": row[2]} for idx, row in enumerate(participants)]
-        print("Fetched leaderboard data:", leaderboard_data)
-    except Exception as e:
-        print("Error fetching leaderboard data:", e)
+    # Assign rank to each participant
+    leaderboard_data = [{"rank": idx + 1, "name": row[0], "score": row[1], "gitlink": row[2]} for idx, row in enumerate(participants)]
 
 # API endpoint to get leaderboard data
 @app.route('/api/leaderboard')
@@ -38,8 +34,11 @@ def leaderboard_api():
 # API endpoint to get the URL of the leaderboard API
 @app.route('/leaderboard-url')
 def leaderboard_url_api():
+    # Get the base URL of the request (e.g., http://example.com)
     base_url = request.url_root
+    # Append the endpoint URL relative to the base URL
     leaderboard_url = base_url + 'api/leaderboard'
+    # Return a JSON response with the leaderboard URL
     return jsonify({'leaderboard_url': leaderboard_url})
 
 # Scheduler setup
@@ -51,5 +50,4 @@ scheduler.start()
 fetch_leaderboard_data()
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='13.228.225.19', port=80)
