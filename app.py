@@ -38,3 +38,6 @@ scheduler.start()
 
 # Initial fetch
 fetch_leaderboard_data()
+
+if __name__ == '__main__':
+    app.run(host='13.228.225.19', port=80)
