@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import sqlitecloud
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -27,9 +27,19 @@ def fetch_leaderboard_data():
     leaderboard_data = [{"rank": idx + 1, "name": row[0], "score": row[1], "gitlink": row[2]} for idx, row in enumerate(participants)]
 
 # API endpoint to get leaderboard data
-@app.route('/leaderboard')
+@app.route('/api/leaderboard')
 def leaderboard_api():
     return jsonify(leaderboard_data)
+
+# API endpoint to get the URL of the leaderboard API
+@app.route('/leaderboard-url')
+def leaderboard_url_api():
+    # Get the base URL of the request (e.g., http://example.com)
+    base_url = request.url_root
+    # Append the endpoint URL relative to the base URL
+    leaderboard_url = base_url + 'api/leaderboard'
+    # Return a JSON response with the leaderboard URL
+    return jsonify({'leaderboard_url': leaderboard_url})
 
 # Scheduler setup
 scheduler = BackgroundScheduler()
